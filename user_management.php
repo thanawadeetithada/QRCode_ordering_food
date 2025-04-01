@@ -46,7 +46,6 @@
         background-color: #222222;
         padding: 20px;
         height: 8vh;
-        width: 100vw;
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         position: fixed;
         top: 0;
@@ -106,10 +105,18 @@
         font-size: 1.5rem;
     }
 
+    .logout {
+        color: white;
+        text-decoration: none;
+    }
+    .logout:hover {
+        color: white;
+        text-decoration: none;
+    }
+
 
     body {
         background-color: #f9fafc;
-        font-family: 'Arial', sans-serif;
         height: 100vh;
         margin: 0;
     }
@@ -120,7 +127,7 @@
         box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.2);
         background: white;
         margin-top: 50px;
-        margin: 3% 5%;
+        margin: 15vh 5%;
         background-color: #ffffff;
     }
 
@@ -148,7 +155,6 @@
         min-height: 100vh;
 
     }
-
 
     .modal-content {
         width: 100%;
@@ -212,14 +218,6 @@
         padding: 10px 40px;
     }
     
-    .logout {
-        color: white;
-        text-decoration: none;
-    }
-    .logout:hover {
-        color: white;
-        text-decoration: none;
-    }
     </style>
 </head>
 
