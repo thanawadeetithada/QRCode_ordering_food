@@ -105,7 +105,7 @@ if (mysqli_query($conn, $update_query)) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Upload Menu</title>
+    <title>เพิ่มรายการอาหาร</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
@@ -210,22 +210,9 @@ if (mysqli_query($conn, $update_query)) {
         width: 150px;
         height: 150px;
     }
-
     .card-center {
-        /* display: flex;
-        width: 18rem;
-        margin-top: 20px;
-        align-items: center; */
         margin-top: 20px;
     }
-
-    /* .row {
-        max-width: fit-content;
-    }
-
-    .row>* {
-        padding-left: 0;
-    } */
 
     .top-btn {
         display: flex;
@@ -259,6 +246,7 @@ if (mysqli_query($conn, $update_query)) {
 
         <div id="sidebar" class="sidebar">
             <a href="dashboard.php">หน้ารายการอาหาร</a>
+            <a href="order.php">หน้าสั่งอาหาร</a>
             <a href="user_management.php">จัดการผู้ใช้งาน</a>
             <a href="record_products.php">บันทึกข้อมูลสินค้า</a>
             <a href="gen_QR.php">QR Code</a>
