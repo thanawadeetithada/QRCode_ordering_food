@@ -171,7 +171,8 @@ while ($row = $result->fetch_assoc()) {
             <a href="order.php">หน้าสั่งอาหาร</a>
             <a href="kitchen.php">ครัวรับออเดอร์</a>
             <a href="user_management.php">จัดการผู้ใช้งาน</a>
-            <a href="record_products.php">บันทึกข้อมูลสินค้า</a>
+            <a href="all_order.php">สรุปการสั่งอาหาร</a>
+            <a href="order_checkbill.php">ชำระเงิน</a>
             <a href="gen_QR.php">QR Code</a>
         </div>
     </header>

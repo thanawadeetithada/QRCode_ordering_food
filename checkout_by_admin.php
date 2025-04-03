@@ -6,10 +6,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $session_id = intval($_POST['session_id']);
     
     if ($table_id && $session_id) {
-        $sql = "UPDATE orders SET is_checked_out = 1, status = 'รอจ่าย' WHERE table_id = $table_id AND order_session_id = $session_id";
+        $sql = "UPDATE orders SET is_checked_out = 1, status = 'เสร็จสิ้น' WHERE table_id = $table_id AND order_session_id = $session_id";
         
         if (mysqli_query($conn, $sql)) {
-            header("Location: order.php"); 
+            header("Location: order_checkbill.php"); 
             exit();
         } else {
             echo "<h3 class='text-center text-danger'>เกิดข้อผิดพลาดในการเช็คเอาท์</h3>";

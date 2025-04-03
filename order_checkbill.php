@@ -1,10 +1,13 @@
+<?php
+require 'db.php';
+?>
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ครัวรับออเดอร์</title>
+    <title>ชำระเงิน</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
@@ -91,30 +94,58 @@
         text-decoration: none;
     }
 
-    @keyframes blink {
-        0% {
-            background-color: #ffcccc;
-        }
-
-        50% {
-            background-color: rgba(255, 102, 102, 0.62);
-        }
-
-        100% {
-            background-color: #ffcccc;
-        }
+    .card-img-top {
+        height: 180px;
+        object-fit: cover;
     }
 
-    .card {
-        width: 13rem;
-        margin: 10px;
-        box-shadow: 10px 10px 15px rgba(0, 0, 0, 0.2);
-        animation: blink 1s infinite;
+    .quantity-control button {
+        width: 32px;
+        height: 32px;
+    }
+
+    .quantity-control input {
+        width: 45px;
+        text-align: center;
+        padding-top: 5px;
+        padding-bottom: 5px;
+    }
+
+    .container {
+        margin-top: 10vh;
+    }
+
+    .container h1 {
+        text-align: center;
+    }
+
+    .select-table {
+        display: flex;
+        align-content: center;
+        justify-content: flex-end;
+        align-items: center;
+    }
+
+    .form-select {
+        width: auto;
+    }
+
+    .form-label {
+        margin-bottom: 0px;
+    }
+
+    .card-body {
+        align-items: center;
         cursor: pointer;
     }
 
-    .row {
-        justify-content: center;
+    .card {
+        margin: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .card:hover {
+        background-color: #f8f9fa;
     }
     </style>
 </head>
@@ -140,13 +171,27 @@
             <a href="gen_QR.php">QR Code</a>
         </div>
     </header>
-    <br> <br> <br>
-    <h1 class="text-center">ครัวรับออเดอร์</h1>
 
-    <div id="orders-list" class="row">
+    <div class="container">
+        <h1 class="mb-4">ชำระเงิน</h1>
+        <br>
+        <div class="row">
+            <?php
+            $result = mysqli_query($conn, "SELECT id, table_number FROM tables");
+            while($row = mysqli_fetch_assoc($result)) {
+                echo '<div class="col-md-3">
+                        <div class="card" onclick="goToHistory(' . $row['id'] . ')">
+                            <div class="card-body text-center">
+                                <h5 class="card-title">โต๊ะ ' . $row['table_number'] . '</h5>
+                            </div>
+                        </div>
+                      </div>';
+            }
+            ?>
+        </div>
 
+     
     </div>
-
 
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
@@ -160,49 +205,9 @@
         }
     });
 
-    function updateStatus(tableId, callback) {
-        const xhr = new XMLHttpRequest();
-        xhr.open('POST', 'update_order_status.php', true);
-        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-        xhr.onload = function() {
-            if (xhr.status === 200) {
-                const response = xhr.responseText.trim();
-                if (response !== "สถานะออเดอร์ได้รับการอัปเดตแล้ว") {
-                    alert(response);
-                } else {
-                    callback();
-                }
-            } else {
-                alert('เกิดข้อผิดพลาดในการอัปเดตสถานะ');
-            }
-        };
-        xhr.send('table_id=' + tableId + '&status=กำลังเตรียมอาหาร');
+    function goToHistory(tableId) {
+        window.location.href = 'checkbill.php?table_id=' + tableId;
     }
-
-    function fetchOrders() {
-        const xhr = new XMLHttpRequest();
-        xhr.open('GET', 'get_orders.php', true);
-        xhr.onload = function() {
-            if (xhr.status === 200) {
-                document.getElementById('orders-list').innerHTML = xhr.responseText;
-
-                const cards = document.querySelectorAll('.order-card');
-                cards.forEach(card => {
-                    card.addEventListener('click', function() {
-                        const tableId = card.getAttribute('data-id');
-                        updateStatus(tableId, function() {
-                            window.location.href = `order_detail.php?id=${tableId}`;
-                        });
-                    });
-                });
-            }
-        }
-        xhr.send();
-    }
-
-    setInterval(fetchOrders, 5000);
-
-    window.onload = fetchOrders;
     </script>
 </body>
 

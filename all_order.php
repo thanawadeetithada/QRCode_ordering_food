@@ -1,10 +1,38 @@
+<?php
+require 'db.php';
+
+$query = "
+    SELECT
+        o.table_id,
+        o.order_session_id,
+        m.name AS menu_name,
+        SUM(o.quantity) AS total_qty,
+        m.price,
+        SUM(o.quantity * m.price) AS total_amount,
+        DATE(o.order_time) AS order_date
+    FROM orders o
+    JOIN menu_items m ON o.menu_item_id = m.id
+    WHERE o.is_checked_out = 1 AND o.status = 'เสร็จสิ้น'
+    GROUP BY o.table_id, o.order_session_id, m.name, m.price, DATE(o.order_time)
+    ORDER BY DATE(o.order_time) DESC, o.table_id, o.order_session_id, m.name
+";
+
+$result = mysqli_query($conn, $query);
+
+$orders = [];
+while ($row = mysqli_fetch_assoc($result)) {
+    $orders[] = $row;
+}
+
+mysqli_close($conn);
+?>
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ครัวรับออเดอร์</title>
+    <title>เพิ่มรายการอาหาร</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
@@ -91,30 +119,17 @@
         text-decoration: none;
     }
 
-    @keyframes blink {
-        0% {
-            background-color: #ffcccc;
-        }
-
-        50% {
-            background-color: rgba(255, 102, 102, 0.62);
-        }
-
-        100% {
-            background-color: #ffcccc;
-        }
+    .table {
+        border-radius: 10px;
+        overflow: hidden;
     }
 
-    .card {
-        width: 13rem;
-        margin: 10px;
-        box-shadow: 10px 10px 15px rgba(0, 0, 0, 0.2);
-        animation: blink 1s infinite;
-        cursor: pointer;
+    .table thead {
+        background-color: rgb(95 158 252 / 68%);
     }
 
-    .row {
-        justify-content: center;
+    .table td {
+        background-color: #dee2e67a;
     }
     </style>
 </head>
@@ -141,13 +156,63 @@
         </div>
     </header>
     <br> <br> <br>
-    <h1 class="text-center">ครัวรับออเดอร์</h1>
 
-    <div id="orders-list" class="row">
+    <?php
+    $previous_date = '';
+    $daily_total_amount = 0;
+    ?>
 
+    <div class="container">
+        <h1 class="text-center">สรุปการสั่งอาหาร</h1>
+        <br>
+
+        <?php
+    foreach ($orders as $order):
+        if ($order['order_date'] !== $previous_date):
+            if ($previous_date != '') { 
+                echo '</tbody>';
+                echo '<tfoot><tr><td colspan="6" class="text-end"><strong>ราคารวมทั้งหมด: ฿' . number_format($daily_total_amount, 2) . '</strong></td></tr></tfoot>';
+                echo '</table><br>';
+            }
+
+            echo "<h5>วันที่: " . htmlspecialchars($order['order_date']) . "</h5>";
+            echo '<table class="table table-bordered table-hovershadow-sm">';
+            echo '<thead>';
+            echo '<tr>';
+            echo '<th>โต๊ะ</th>';
+            echo '<th>รอบเช็คบิล</th>';
+            echo '<th>ชื่ออาหาร</th>';
+            echo '<th>จำนวน</th>';
+            echo '<th>ราคา/หน่วย</th>';
+            echo '<th>ราคารวม</th>';
+            echo '</tr>';
+            echo '</thead>';
+            echo '<tbody>';
+
+            $daily_total_amount = 0;
+            $previous_date = $order['order_date'];
+        endif;
+
+        $daily_total_amount += $order['total_amount'];
+        ?>
+
+        <tr>
+            <td><?php echo $order['table_id']; ?></td>
+            <td><?php echo $order['order_session_id']; ?></td>
+            <td><?php echo htmlspecialchars($order['menu_name']); ?></td>
+            <td><?php echo $order['total_qty']; ?></td>
+            <td>฿<?php echo number_format($order['price'], 2); ?></td>
+            <td>฿<?php echo number_format($order['total_amount'], 2); ?></td>
+        </tr>
+
+        <?php endforeach; ?>
+        <tfoot>
+            <tr>
+                <td colspan="6" class="text-end"><strong>ราคารวมทั้งหมด:
+                        ฿<?php echo number_format($daily_total_amount, 2); ?></strong></td>
+            </tr>
+        </tfoot>
     </div>
-
-
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
     <script>
@@ -159,50 +224,6 @@
             sidebar.style.left = "0";
         }
     });
-
-    function updateStatus(tableId, callback) {
-        const xhr = new XMLHttpRequest();
-        xhr.open('POST', 'update_order_status.php', true);
-        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-        xhr.onload = function() {
-            if (xhr.status === 200) {
-                const response = xhr.responseText.trim();
-                if (response !== "สถานะออเดอร์ได้รับการอัปเดตแล้ว") {
-                    alert(response);
-                } else {
-                    callback();
-                }
-            } else {
-                alert('เกิดข้อผิดพลาดในการอัปเดตสถานะ');
-            }
-        };
-        xhr.send('table_id=' + tableId + '&status=กำลังเตรียมอาหาร');
-    }
-
-    function fetchOrders() {
-        const xhr = new XMLHttpRequest();
-        xhr.open('GET', 'get_orders.php', true);
-        xhr.onload = function() {
-            if (xhr.status === 200) {
-                document.getElementById('orders-list').innerHTML = xhr.responseText;
-
-                const cards = document.querySelectorAll('.order-card');
-                cards.forEach(card => {
-                    card.addEventListener('click', function() {
-                        const tableId = card.getAttribute('data-id');
-                        updateStatus(tableId, function() {
-                            window.location.href = `order_detail.php?id=${tableId}`;
-                        });
-                    });
-                });
-            }
-        }
-        xhr.send();
-    }
-
-    setInterval(fetchOrders, 5000);
-
-    window.onload = fetchOrders;
     </script>
 </body>
 
