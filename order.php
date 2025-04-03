@@ -154,6 +154,7 @@ require 'db.php';
         <div id="sidebar" class="sidebar">
             <a href="dashboard.php">หน้ารายการอาหาร</a>
             <a href="order.php">หน้าสั่งอาหาร</a>
+            <a href="kitchen.php">ครัวรับออเดอร์</a>
             <a href="user_management.php">จัดการผู้ใช้งาน</a>
             <a href="record_products.php">บันทึกข้อมูลสินค้า</a>
             <a href="gen_QR.php">QR Code</a>
@@ -177,7 +178,7 @@ require 'db.php';
         <br>
         <div class="row" id="menuContainer">
             <?php
-    // ดึงทุกหมวดหมู่ที่มีในระบบ
+
     $category_query = "SELECT DISTINCT category FROM menu_items WHERE is_visible = 1";
     $category_result = mysqli_query($conn, $category_query);
 
@@ -185,7 +186,6 @@ require 'db.php';
         $current_category = $cat['category'];
         echo '<div class="col-12"><h3 class="mt-4 mb-3">' . htmlspecialchars($current_category) . '</h3></div>';
 
-        // ดึงรายการอาหารที่อยู่ในหมวดหมู่นั้น ๆ
         $item_query = "SELECT * FROM menu_items WHERE category = '" . mysqli_real_escape_string($conn, $current_category) . "' AND is_visible = 1";
         $item_result = mysqli_query($conn, $item_query);
 

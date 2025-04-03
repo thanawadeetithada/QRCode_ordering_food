@@ -193,7 +193,7 @@ if (mysqli_query($conn, $update_query)) {
     }
 
     .content {
-        margin: 5vh 15vw;
+        margin: 5vh 5vw;
         text-align: -webkit-center;
     }
 
@@ -210,6 +210,7 @@ if (mysqli_query($conn, $update_query)) {
         width: 150px;
         height: 150px;
     }
+
     .card-center {
         margin-top: 20px;
     }
@@ -230,6 +231,10 @@ if (mysqli_query($conn, $update_query)) {
     .modal-upload-btn {
         float: right;
     }
+
+    p {
+        margin-bottom: 0.5rem;
+    }
     </style>
 </head>
 
@@ -247,6 +252,7 @@ if (mysqli_query($conn, $update_query)) {
         <div id="sidebar" class="sidebar">
             <a href="dashboard.php">หน้ารายการอาหาร</a>
             <a href="order.php">หน้าสั่งอาหาร</a>
+            <a href="kitchen.php">ครัวรับออเดอร์</a>
             <a href="user_management.php">จัดการผู้ใช้งาน</a>
             <a href="record_products.php">บันทึกข้อมูลสินค้า</a>
             <a href="gen_QR.php">QR Code</a>
@@ -286,7 +292,7 @@ if (mysqli_query($conn, $update_query)) {
         <div class="row justify-content-center">
             <?php while ($row = mysqli_fetch_assoc($result)): ?>
             <div class="col-12 col-sm-6 col-md-4 col-lg-3 d-flex justify-content-center mb-4">
-                <div class="card" style="width: 18rem;">
+                <div class="card shadow" style="width: 18rem;">
                     <img src="<?php echo $row['image']; ?>" class="card-img-top mx-auto d-block" alt="...">
                     <div class="card-body text-center">
                         <h5 class="card-title"><?php echo $row['name']; ?></h5>
@@ -303,7 +309,7 @@ if (mysqli_query($conn, $update_query)) {
                                 <?php echo $row['is_visible'] == 1 ? 'แสดงสินค้า' : 'แสดงสินค้า'; ?>
                             </label>
                         </div>
-                        <br>
+
 
                         <div class="form-check form-switch d-flex justify-content-center align-items-center gap-2">
                             <input class="form-check-input recommended-toggle" type="checkbox"
@@ -317,10 +323,8 @@ if (mysqli_query($conn, $update_query)) {
                         <br>
 
                         <a href="#" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editModal"
-                            data-id="<?php echo $row['id']; ?>" 
-                            data-name="<?php echo $row['name']; ?>"
-                            data-category="<?php echo $row['category']; ?>" 
-                            data-price="<?php echo $row['price']; ?>"
+                            data-id="<?php echo $row['id']; ?>" data-name="<?php echo $row['name']; ?>"
+                            data-category="<?php echo $row['category']; ?>" data-price="<?php echo $row['price']; ?>"
                             data-additional_info="<?php echo $row['additional_info']; ?>"
                             data-image="<?php echo $row['image']; ?>"
                             data-is_visible="<?php echo $row['is_visible']; ?>"
@@ -513,7 +517,7 @@ if (mysqli_query($conn, $update_query)) {
             const is_visible = this.getAttribute('data-is_visible') == "1";
             const recommended = this.getAttribute('data-recommended') == "1";
             const image = this.getAttribute('data-image');
-            
+
             document.getElementById('edit_id').value = id;
             document.getElementById('edit_name').value = name;
             document.getElementById('edit_category').value = category;

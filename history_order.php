@@ -106,8 +106,9 @@ while ($row = mysqli_fetch_assoc($result)) {
     .table thead {
         background-color: rgb(95 158 252 / 68%);
     }
+
     .table td {
-         background-color: #dee2e67a;
+        background-color: #dee2e67a;
     }
     </style>
 </head>
@@ -168,10 +169,9 @@ while ($row = mysqli_fetch_assoc($result)) {
         <form action="checkout.php" method="POST">
             <input type="hidden" name="table_id" value="<?php echo $table_id; ?>">
             <input type="hidden" name="session_id" value="<?php echo $session_id; ?>">
-            <cko type="button" class="btn btn-primary btn-lg" <?php echo $can_checkout ? '' : 'disabled'; ?>
-                data-bs-toggle="modal" data-bs-target="#checkoutModal">
+            <button type="submit" class="btn btn-primary btn-lg" <?php echo $can_checkout ? '' : 'disabled'; ?>>
                 ชำระเงิน
-            </cko>
+            </button>
         </form>
     </div>
     <?php endif; ?>

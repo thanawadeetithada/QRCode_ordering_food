@@ -5,19 +5,22 @@ $result = $conn->query("SELECT * FROM tables");
 $tables = [];
 while ($row = $result->fetch_assoc()) {
     $tables[] = $row;
-} 
-
-
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>QR Table Manager</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
+    body {
+        margin: 1rem;
+    }
+
     .header {
         display: flex;
         align-items: center;
@@ -97,15 +100,6 @@ while ($row = $result->fetch_assoc()) {
         text-decoration: none;
     }
 
-    .container {
-        padding-top: 1.5rem !important;
-        padding-bottom: 1.5rem !important;
-    }
-
-    .container h1 {
-        text-align: center;
-    }
-
     .table-form {
         width: 25%;
     }
@@ -119,10 +113,6 @@ while ($row = $result->fetch_assoc()) {
     }
 
     @media print {
-        .container {
-            margin: 0;
-            padding: 0;
-        }
 
         header,
         .header,
@@ -165,7 +155,7 @@ while ($row = $result->fetch_assoc()) {
     </style>
 </head>
 
-<body class="container">
+<body>
     <header class="header">
         <div class="left-section">
             <button type="button" class="menu-btn" id="menu-toggle">
@@ -179,13 +169,14 @@ while ($row = $result->fetch_assoc()) {
         <div id="sidebar" class="sidebar">
             <a href="dashboard.php">หน้ารายการอาหาร</a>
             <a href="order.php">หน้าสั่งอาหาร</a>
+            <a href="kitchen.php">ครัวรับออเดอร์</a>
             <a href="user_management.php">จัดการผู้ใช้งาน</a>
             <a href="record_products.php">บันทึกข้อมูลสินค้า</a>
             <a href="gen_QR.php">QR Code</a>
         </div>
     </header>
     <br> <br> <br>
-    <h1 class="mb-4">จัดการ QR Code โต๊ะอาหาร</h1>
+    <h1 class="text-center">จัดการ QR Code โต๊ะอาหาร</h1>
     <br>
     <form action="add_table.php" method="post" class="d-flex justify-content-end mb-4">
         <input type="text" name="table_number" class="table-form form-control me-2" placeholder="หมายเลขโต๊ะ" required>
@@ -257,7 +248,6 @@ while ($row = $result->fetch_assoc()) {
             </div>
         </div>
     </div>
-
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
     <script>
@@ -317,7 +307,6 @@ while ($row = $result->fetch_assoc()) {
         window.history.replaceState(null, null, window.location.pathname);
     }
     </script>
-
 </body>
 
 </html>

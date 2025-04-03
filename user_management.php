@@ -234,6 +234,7 @@
         <div id="sidebar" class="sidebar">
             <a href="dashboard.php">หน้ารายการอาหาร</a>
             <a href="order.php">หน้าสั่งอาหาร</a>
+            <a href="kitchen.php">ครัวรับออเดอร์</a>
             <a href="user_management.php">จัดการผู้ใช้งาน</a></a>
             <a href="record_products.php">บันทึกข้อมูลสินค้า</a>
             <a href="gen_QR.php">QR Code</a>
