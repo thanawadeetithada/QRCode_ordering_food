@@ -1,25 +1,32 @@
 <?php
+session_start();
 require 'db.php';
 
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
+$table_number = isset($_GET['table_number']) ? $_GET['table_number'] : null;
 
-$table_id = isset($_GET['table_id']) ? intval($_GET['table_id']) : null;
 
-if (!$table_id) {
+if ($table_number === null) {
+
     die("<h3 class='text-danger text-center mt-5'>กรุณาเลือกโต๊ะก่อน</h3>");
+
+}
+$table_query = mysqli_query($conn, "SELECT id, table_number FROM tables WHERE table_number = '$table_number'");
+$table_data = mysqli_fetch_assoc($table_query);
+
+if (!$table_data) {
+    die("<h3 class='text-danger text-center mt-5'>โต๊ะไม่ถูกต้อง</h3>");
 }
 
-$table_query = mysqli_query($conn, "SELECT table_number FROM tables WHERE id = $table_id");
-$table_data = mysqli_fetch_assoc($table_query);
+$table_id = $table_data['id'];
 $table_number = $table_data['table_number'] ?? '-';
 
+// ดึงข้อมูล session_id
 $session_sql = "SELECT MAX(order_session_id) as session_id FROM orders WHERE table_id = $table_id AND is_checked_out = 0";
 $session_result = mysqli_query($conn, $session_sql);
 $session_row = mysqli_fetch_assoc($session_result);
 $session_id = $session_row['session_id'] ?? 0;
 
+// คำสั่ง SQL สำหรับดึงข้อมูลคำสั่งอาหาร
 $sql = "SELECT o.status, m.name AS menu_name, SUM(o.quantity) AS total_qty, m.price
         FROM orders o
         JOIN menu_items m ON o.menu_item_id = m.id
@@ -43,7 +50,6 @@ while ($row = mysqli_fetch_assoc($result)) {
     }
     $grouped_orders[$status][] = $row;
 }
-
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -116,11 +122,13 @@ while ($row = mysqli_fetch_assoc($result)) {
 <body>
     <header class="header">
         <div class="left-section">
-            <button type="button" class="menu-btn" id="menu-toggle" onclick="window.location.href='order.php'">
+            <button type="button" class="menu-btn" id="menu-toggle"
+                onclick="window.location.href='order.php?table_number=<?php echo $table_number; ?>'">
                 <i class="fa-solid fa-arrow-left"></i>
             </button>
         </div>
     </header>
+
     <br> <br> <br>
 
     <div class="container">
@@ -141,7 +149,7 @@ while ($row = mysqli_fetch_assoc($result)) {
                     <tr>
                         <th>ชื่ออาหาร</th>
                         <th>จำนวน</th>
-                        <th>ราคาต่อหน่วย</th>
+                        <th>ราคา</th>
                         <th>ราคารวม</th>
                     </tr>
                 </thead>

@@ -26,7 +26,7 @@ if ($table_number) {
 
         $filename = 'qrcodes/' . $table_number . '.png';
 
-        $qrContent = "http://localhost/QRCode_ordering_food/order.php?table=" . urlencode($table_number);
+        $qrContent = "http://scan-order.ct.ws/order.php?table_number=" . urlencode($table_number);
 
         $qrCode = new QrCode($qrContent);
         $writer = new PngWriter();

@@ -111,7 +111,7 @@ require 'db.php';
         padding-bottom: 5px;
     }
 
-    .container {
+    .space-tab {
         margin-top: 10vh;
     }
 
@@ -153,7 +153,7 @@ require 'db.php';
         </div>
 
         <div id="sidebar" class="sidebar">
-        <?php if ($_SESSION['user_role'] == 'superadmin'): ?>
+            <?php if ($_SESSION['user_role'] == 'superadmin'): ?>
             <a href="dashboard.php">หน้ารายการอาหาร</a>
             <a href="order.php">หน้าสั่งอาหาร</a>
             <a href="kitchen.php">ครัวรับออเดอร์</a>
@@ -166,18 +166,25 @@ require 'db.php';
             <?php endif; ?>
         </div>
     </header>
+    <div class="space-tab"></div>
     <?php endif; ?>
 
     <div class="container">
         <h1 class="mb-4">สั่งอาหาร</h1>
 
         <div class="select-table mb-4">
-            <label for="tableSelect" class="form-label">เลือกโต๊ะ</label> &nbsp;&nbsp;
-            <select class="form-select" id="tableSelect">
+            <label for="tableSelect" class="form-label"></label> &nbsp;&nbsp;
+            <select class="form-select" id="tableSelect"
+                <?php if (!isset($_SESSION['username'])) { echo 'disabled'; } ?>>
                 <?php
         $result = mysqli_query($conn, "SELECT id, table_number FROM tables");
-        while($row = mysqli_fetch_assoc($result)) {
-          echo '<option value="' . $row['id'] . '">โต๊ะ ' . $row['table_number'] . '</option>';
+        $url_table_number = isset($_GET['table_number']) ? $_GET['table_number'] : null;
+        while ($row = mysqli_fetch_assoc($result)) {
+            $selected = '';
+            if ($url_table_number && $url_table_number == $row['table_number']) {
+                $selected = 'selected';
+            }
+            echo '<option value="' . $row['id'] . '" ' . $selected . '>โต๊ะ ' . $row['table_number'] . '</option>';
         }
         ?>
             </select>
@@ -330,10 +337,34 @@ require 'db.php';
             });
 
     }
-
     function goToHistory() {
         const tableId = document.getElementById('tableSelect').value;
-        window.location.href = 'history_order.php?table_id=' + tableId;
+        const urlParams = new URLSearchParams(window.location.search);
+        let tableNumber = urlParams.get('table_number');
+
+        if (!tableNumber) {
+            fetch('get_table_number.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        table_id: tableId
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        tableNumber = data.table_number;
+                        window.location.href = 'history_order.php?table_number=' + tableNumber;
+                    } else {
+                        console.error('ไม่พบหมายเลขโต๊ะ');
+                    }
+                })
+                .catch(error => console.error('เกิดข้อผิดพลาดในการค้นหาหมายเลขโต๊ะ:', error));
+        } else {
+            window.location.href = 'history_order.php?table_number=' + tableNumber;
+        }
     }
 
     window.onload = function() {
