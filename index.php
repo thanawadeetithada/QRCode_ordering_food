@@ -1,13 +1,11 @@
 <?php
-session_start();  // เรียกใช้ session
+session_start();
+include('db.php');
 
-include('db.php');  // เชื่อมต่อฐานข้อมูล
-
-if ($_SERVER["REQUEST_METHOD"] == "POST") { // ตรวจสอบหากเป็นคำขอแบบ POST
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $username = $_POST['username'];
     $password = $_POST['password']; 
 
-    // ตรวจสอบข้อมูลผู้ใช้จากฐานข้อมูล
     $stmt = $conn->prepare("SELECT * FROM users WHERE username = ?");
     $stmt->bind_param("s", $username);
     $stmt->execute();
@@ -15,20 +13,27 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") { // ตรวจสอบหากเ
     $user = $result->fetch_assoc();
 
     if ($user) {   
-        // ตรวจสอบรหัสผ่าน
         if (password_verify($password, $user['password'])) {
-                $_SESSION['user_id'] = $user['id'];
-                $_SESSION['user_email'] = $user['email'];
-                $_SESSION['user_role'] = $user['userrole'];
-                $_SESSION['fullname'] = $user['fullname']; 
-                
-                header("Location: dashboard.php"); // ไปที่หน้า Dashboard
+            $_SESSION['user_id'] = $user['id'];
+            $_SESSION['user_email'] = $user['email'];
+            $_SESSION['user_role'] = $user['userrole'];
+            $_SESSION['username'] = $user['username']; 
+
+            if ($_SESSION['user_role'] == 'superadmin') {
+                header("Location: dashboard.php");
                 exit();
+            } else if ($_SESSION['user_role'] == 'admin') {
+                header("Location: kitchen.php");
+                exit();
+            } else {
+                $error_message = "❌ คุณไม่มีสิทธิ์เข้าถึง";
+            }
+            
         } else {
             $error_message = "❌ รหัสผ่านไม่ถูกต้อง";
         }
     } else {
-        $error_message = "❌ อีเมลนี้ไม่ได้ลงทะเบียน";
+        $error_message = "❌ ชื่อผู้ใช้งานนี้ไม่ได้ลงทะเบียน";
     }
 
     $stmt->close();
@@ -128,7 +133,7 @@ $conn->close();
 <body>
     <?php if (isset($_GET['success']) && $_GET['success'] == 1): ?>
     <script>
-     alert("ลงทะเบียนสำเร็จแล้ว กรุณารอยืนยันก่อนเข้าสู่ระบบ");
+    alert("ลงทะเบียนสำเร็จแล้ว กรุณารอยืนยันก่อนเข้าสู่ระบบ");
     </script>
     <?php endif; ?>
     <div class="login-wrapper">
@@ -153,14 +158,14 @@ $conn->close();
                 <button type="submit" class="btn btn-primary">เข้าสู่ระบบ</button>
             </form>
             <p>
-            <a href="#" id="forgotPasswordLink" data-toggle="modal" data-target="#forgotPasswordModal">
-            ลืมรหัสผ่าน</a>
-             <br>   <a href="register.php">ยังไม่มีบัญชี? ลงทะเบียนใหม่</a>
+                <a href="#" id="forgotPasswordLink" data-toggle="modal" data-target="#forgotPasswordModal">
+                    ลืมรหัสผ่าน</a>
+                <br> <a href="register.php">ยังไม่มีบัญชี? ลงทะเบียนใหม่</a>
             </p>
         </div>
     </div>
 
-      <div class="modal fade" id="forgotPasswordModal" tabindex="-1" role="dialog">
+    <div class="modal fade" id="forgotPasswordModal" tabindex="-1" role="dialog">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content modal">
                 <div class="modal-header align-items-center">
@@ -181,9 +186,8 @@ $conn->close();
             </div>
         </div>
     </div>
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    
 
 
 </body>

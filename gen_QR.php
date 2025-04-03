@@ -1,5 +1,11 @@
 <?php
+session_start();
 include 'db.php';
+
+if (!isset($_SESSION['username']) || $_SESSION['user_role'] !== 'superadmin') {
+    header("Location: index.php");
+    exit();
+}
 
 $result = $conn->query("SELECT * FROM tables");
 $tables = [];
@@ -167,6 +173,7 @@ while ($row = $result->fetch_assoc()) {
         </div>
 
         <div id="sidebar" class="sidebar">
+            <?php if ($_SESSION['user_role'] == 'superadmin'): ?>
             <a href="dashboard.php">หน้ารายการอาหาร</a>
             <a href="order.php">หน้าสั่งอาหาร</a>
             <a href="kitchen.php">ครัวรับออเดอร์</a>
@@ -174,6 +181,9 @@ while ($row = $result->fetch_assoc()) {
             <a href="all_order.php">สรุปการสั่งอาหาร</a>
             <a href="order_checkbill.php">ชำระเงิน</a>
             <a href="gen_QR.php">QR Code</a>
+            <?php elseif ($_SESSION['user_role'] == 'admin'): ?>
+            <a href="kitchen.php">ครัวรับออเดอร์</a>
+            <?php endif; ?>
         </div>
     </header>
     <br> <br> <br>

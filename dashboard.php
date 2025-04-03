@@ -1,11 +1,13 @@
 <?php
+session_start();
 require 'db.php';
 
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
+if (!isset($_SESSION['username']) || $_SESSION['user_role'] !== 'superadmin') {
+    header("Location: index.php");
+    exit();
 }
 
-$username = $_SESSION['username'] ?? null;
+$username = $_SESSION['username']; 
 
 $category_query = "SELECT DISTINCT category FROM menu_items";
 $category_result = mysqli_query($conn, $category_query);
@@ -250,6 +252,7 @@ if (mysqli_query($conn, $update_query)) {
         </div>
 
         <div id="sidebar" class="sidebar">
+        <?php if ($_SESSION['user_role'] == 'superadmin'): ?>
             <a href="dashboard.php">หน้ารายการอาหาร</a>
             <a href="order.php">หน้าสั่งอาหาร</a>
             <a href="kitchen.php">ครัวรับออเดอร์</a>
@@ -257,6 +260,9 @@ if (mysqli_query($conn, $update_query)) {
             <a href="all_order.php">สรุปการสั่งอาหาร</a>
             <a href="order_checkbill.php">ชำระเงิน</a>
             <a href="gen_QR.php">QR Code</a>
+            <?php elseif ($_SESSION['user_role'] == 'admin'): ?>
+            <a href="kitchen.php">ครัวรับออเดอร์</a>
+            <?php endif; ?>
         </div>
     </header>
     <br> <br> <br>

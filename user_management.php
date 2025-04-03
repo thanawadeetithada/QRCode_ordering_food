@@ -1,8 +1,8 @@
 <?php
-    session_start();       //เรียก session
-    require_once 'db.php'; //ต่อ database
+    session_start();
+    require_once 'db.php';
 
-    if (! isset($_SESSION['user_id'])) { //login
+    if (!isset($_SESSION['username']) || $_SESSION['user_role'] !== 'superadmin') {
         header("Location: index.php");
         exit();
     }
@@ -16,11 +16,11 @@
     $stmt->fetch();
     $stmt->close();
 
-    if ($userrole == 'admin' || $userrole == 'superadmin') { //เช็ค role admin
-        $sql    = "SELECT * FROM users";                         //admin/superadmin เรียกทุกข้อมูล
+    if ($userrole == 'admin' || $userrole == 'superadmin') {
+        $sql    = "SELECT * FROM users"; 
         $result = $conn->query($sql);
     } else {
-        echo "คุณไม่มีสิทธิ์เข้าถึงข้อมูลนี้"; //ถ้าไม่ใช่ admin หรือ superadmin ไปหน้า login
+        echo "คุณไม่มีสิทธิ์เข้าถึงข้อมูลนี้";
         header("Location: index.php");
         exit();
     }
@@ -109,6 +109,7 @@
         color: white;
         text-decoration: none;
     }
+
     .logout:hover {
         color: white;
         text-decoration: none;
@@ -217,28 +218,31 @@
     .modal-body {
         padding: 10px 40px;
     }
-    
     </style>
 </head>
 
 <body>
-<header class="header">
+    <header class="header">
         <div class="left-section">
             <button type="button" class="menu-btn" id="menu-toggle">
                 <i class="fa-solid fa-bars"></i>
             </button>
         </div>
         <div class="right-section">
-            <a class="logout" href="logout.php">Logout</a>   
+            <a class="logout" href="logout.php">Logout</a>
         </div>
         <div id="sidebar" class="sidebar">
+            <?php if ($_SESSION['user_role'] == 'superadmin'): ?>
             <a href="dashboard.php">หน้ารายการอาหาร</a>
             <a href="order.php">หน้าสั่งอาหาร</a>
             <a href="kitchen.php">ครัวรับออเดอร์</a>
-            <a href="user_management.php">จัดการผู้ใช้งาน</a></a>
+            <a href="user_management.php">จัดการผู้ใช้งาน</a>
             <a href="all_order.php">สรุปการสั่งอาหาร</a>
             <a href="order_checkbill.php">ชำระเงิน</a>
             <a href="gen_QR.php">QR Code</a>
+            <?php elseif ($_SESSION['user_role'] == 'admin'): ?>
+            <a href="kitchen.php">ครัวรับออเดอร์</a>
+            <?php endif; ?>
         </div>
     </header>
     <div class="card">
@@ -267,16 +271,14 @@
                         <td><?php echo htmlspecialchars($row['email']); ?></td>
                         <td><?php echo htmlspecialchars($row['userrole']); ?></td>
                         <td class="btn-action">
-                            <a href="#" class="btn btn-warning btn-sm edit-btn" data-id="<?php echo $row['id']; ?>"
-                                <?php if ($userrole == 'admin' && $row['userrole'] == 'superadmin') {
+                            <a href="#" class="btn btn-warning btn-sm edit-btn" data-id="<?php echo $row['id']; ?>" <?php if ($userrole == 'admin' && $row['userrole'] == 'superadmin') {
                                         echo 'style="visibility:hidden;"';
                                 }
                                 ?>>
                                 <i class="fa-solid fa-pencil"></i>
                             </a>
                             &nbsp;&nbsp;
-                            <a href="#" class="btn btn-danger btn-sm delete-btn" data-id="<?php echo $row['id']; ?>"
-                                <?php if ($userrole == 'admin' && $row['userrole'] == 'superadmin') {
+                            <a href="#" class="btn btn-danger btn-sm delete-btn" data-id="<?php echo $row['id']; ?>" <?php if ($userrole == 'admin' && $row['userrole'] == 'superadmin') {
                                         echo 'style="visibility:hidden;"';
                                 }
                                 ?>>
@@ -356,14 +358,14 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-     document.getElementById("menu-toggle").addEventListener("click", function() {
-        const sidebar = document.getElementById("sidebar");
-        if (sidebar.style.left === "0px") {
-            sidebar.style.left = "-250px";
-        } else {
-            sidebar.style.left = "0";
-        }
-    });
+document.getElementById("menu-toggle").addEventListener("click", function() {
+    const sidebar = document.getElementById("sidebar");
+    if (sidebar.style.left === "0px") {
+        sidebar.style.left = "-250px";
+    } else {
+        sidebar.style.left = "0";
+    }
+});
 $(document).ready(function() {
     // ปุ่มแก้ไข
     $(".edit-btn").on("click", function(e) {
