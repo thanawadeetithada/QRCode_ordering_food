@@ -47,7 +47,7 @@ $conn->close();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>แอดมินสั่งอาหาร</title>
+    <title>ร้านอาหาร</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <style>
@@ -137,7 +137,7 @@ $conn->close();
     </script>
     <?php endif; ?>
     <div class="login-wrapper">
-        <h2 class="login-title">แอดมินสั่งอาหาร</h2>
+        <h2 class="login-title">ร้านอาหาร</h2>
 
         <div class="login-container">
             <?php if (!empty($error_message)): ?>
