@@ -329,6 +329,15 @@ require 'db.php';
         const tableId = document.getElementById('tableSelect').value;
         window.location.href = 'history_order.php?table_id=' + tableId;
     }
+
+    window.onload = function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const tableId = urlParams.get('table');
+
+        if (tableId) {
+            document.getElementById('tableSelect').value = tableId;
+        }
+    }
     </script>
 </body>
 
